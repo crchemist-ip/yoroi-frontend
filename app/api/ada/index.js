@@ -87,6 +87,8 @@ import { InvalidWitnessError } from './errors';
 import { WrongPassphraseError } from './lib/cardanoCrypto/cryptoErrors';
 import { getSingleCryptoAccount, getAdaWallet, getLastBlockNumber } from './adaLocalStorage';
 import { saveTxs } from './lib/lovefieldDatabase';
+import type { TransactionExportRow } from '../export';
+import { convertAdaTransactionsToExportRows } from './lib/utils';
 
 // ADA specific Request / Response params
 export type CreateAddressResponse = WalletAddress;
@@ -555,6 +557,18 @@ export default class AdaApi {
         // We don't know what the problem was so throw a generic error
         throw new GenericApiError();
       }
+    }
+  }
+
+  // noinspection JSMethodCanBeStatic
+  async getTransactionRowsToExport(): Promise<Array<TransactionExportRow>> {
+    try {
+      await refreshTxs();
+      const history: AdaTransactions = await getAdaTxsHistoryByWallet();
+      return convertAdaTransactionsToExportRows(history[0]);
+    } catch (e) {
+      Logger.error('AdaApi::exportTransactionsToFile: ' + stringifyError(e));
+      throw e;
     }
   }
 }
