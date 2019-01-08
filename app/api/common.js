@@ -104,6 +104,9 @@ export type GetTransactionsResponse = {
   total: number,
 };
 
+export type ExportTransactionsToFileRequest = any;
+export type ExportTransactionsToFileResponse = any;
+
 export type CreateWalletRequest = {
   name: string,
   mnemonic: string,
